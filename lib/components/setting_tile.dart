@@ -1,16 +1,19 @@
 import "package:flutter/material.dart";
 
+typedef void SettingTileOnChange(int value);
+
 class SettingTile extends StatefulWidget {
   final String title;
   final List<String> choices;
-  final String initialValue;
+  final int initialValue;
   final Widget icon;
-
+  final SettingTileOnChange onChange;
   SettingTile(
       {@required this.title,
       @required this.choices,
-      this.initialValue,
-      this.icon})
+      this.initialValue = 0,
+      this.icon,
+      this.onChange})
       : super();
 
   @override
@@ -18,19 +21,30 @@ class SettingTile extends StatefulWidget {
 }
 
 class _SettingTileState extends State<SettingTile> {
-  String _currentChoice;
+  int _currentChoice;
   @override
   void initState() {
     super.initState();
+    _currentChoice = widget.initialValue ?? 0;
+  }
+
+  @override
+  void didUpdateWidget(covariant SettingTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialValue != widget.initialValue &&
+        _currentChoice != widget.initialValue) {
+      setState(() {
+        _currentChoice = widget.initialValue;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      key: ValueKey("${widget.title}-$_currentChoice"),
+      key: ValueKey("${widget.title}-${_currentChoice.toString()}"),
       title: Text(widget.title),
-      subtitle:
-          Text(_currentChoice ?? widget.initialValue ?? widget.choices[0]),
+      subtitle: Text(widget.choices[_currentChoice]),
       leading: widget.icon ?? Icon(Icons.settings),
       children: widget.choices
           .map((e) => ListTile(
@@ -38,7 +52,13 @@ class _SettingTileState extends State<SettingTile> {
                   alignment: Alignment.centerRight,
                   child: Text(e),
                 ),
-                onTap: () => setState(() => _currentChoice = e),
+                onTap: () {
+                  int value = widget.choices.indexOf(e);
+                  setState(() {
+                    return _currentChoice = value;
+                  });
+                  widget.onChange(value);
+                },
               ))
           .toList(),
     );

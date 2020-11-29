@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jikan_api/jikan_api.dart';
-import 'package:seasonal_weeb/bloc/app_bloc.dart';
+import 'package:seasonal_weeb/bloc/app/app_bloc.dart';
+import 'package:seasonal_weeb/bloc/config/config_bloc.dart';
 import 'package:tcard/tcard.dart';
 
 class SeriesCard extends StatefulWidget {
@@ -21,7 +22,7 @@ class _SeriesCardState extends State<SeriesCard> {
   List<ImageProvider> images;
   bool showInfo = false;
   ThemeData theme;
-
+  ConfigBloc config;
   @override
   void initState() {
     super.initState();
@@ -85,7 +86,7 @@ class _SeriesCardState extends State<SeriesCard> {
   @override
   Widget build(BuildContext buildContext) {
     theme = Theme.of(this.context);
-
+    config = BlocProvider.of<ConfigBloc>(context);
     return GestureDetector(
         onLongPressStart: (s) => _toggleInfo(),
         onLongPressEnd: (s) => _toggleInfo(),
@@ -133,21 +134,24 @@ class _SeriesCardState extends State<SeriesCard> {
                                   style: theme.textTheme.headline4,
                                   textAlign: TextAlign.center,
                                 ),
-                                Stack(
-                                  fit: StackFit.loose,
-                                  alignment: AlignmentDirectional.center,
-                                  children: [
-                                    Icon(
-                                      Icons.star,
-                                      size: 100,
-                                      color: theme.accentColor,
-                                    ),
-                                    Text(
-                                      widget.anime.score.toString(),
-                                      style: theme.textTheme.bodyText2,
-                                    )
-                                  ],
-                                ),
+                                if (config.config[ConfigKeys.showScores] ==
+                                        null ||
+                                    config.config[ConfigKeys.showScores] == 0)
+                                  Stack(
+                                    fit: StackFit.loose,
+                                    alignment: AlignmentDirectional.center,
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        size: 100,
+                                        color: theme.accentColor,
+                                      ),
+                                      Text(
+                                        widget.anime.score.toString(),
+                                        style: theme.textTheme.bodyText2,
+                                      )
+                                    ],
+                                  ),
                                 Wrap(
                                     direction: Axis.horizontal,
                                     alignment: WrapAlignment.center,

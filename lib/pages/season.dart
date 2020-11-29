@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jikan_api/jikan_api.dart';
-import 'package:seasonal_weeb/bloc/app_bloc.dart';
+import 'package:seasonal_weeb/bloc/app/app_bloc.dart';
 import 'package:seasonal_weeb/components/series_card.dart';
 import 'package:tcard/tcard.dart';
 
@@ -41,8 +41,9 @@ class SeasonPage extends StatelessWidget {
         if (state is AppFetchFailed) {
           return Text(state.failureReason, style: TextStyle(color: Colors.red));
         } else
-          return Text("Uh oh, something went wrong...",
-              style: TextStyle(color: Colors.red));
+          return AlertDialog(
+              title: Text("Uh oh, something went wrong...",
+                  style: Theme.of(context).textTheme.bodyText1));
       },
     );
   }

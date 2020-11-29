@@ -21,6 +21,8 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  enum_to_string: ^1.0.14
+  shared_preferences: ^0.5.12+4
   tcard: ^1.2.2
   equatable: ^1.2.3
   flutter_bloc: ^6.1.1

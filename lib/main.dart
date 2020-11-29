@@ -4,9 +4,8 @@ import 'package:jikan_api/jikan_api.dart';
 import 'app.dart';
 import 'bloc/simple_bloc_observer.dart';
 
-
 void main() {
   Bloc.observer = SimpleBlocObserver();
   Jikan jikan = Jikan();
-  runApp(App(jikan:jikan));
+  runApp(App(jikan: jikan));
 }
