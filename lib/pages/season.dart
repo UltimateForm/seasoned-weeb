@@ -25,7 +25,9 @@ class SeasonPage extends StatelessWidget {
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
         if (state is AppInitialState) {
-          return Center(child: Text("Not loaded"));
+          return AlertDialog(
+              title: Text(
+                  "Something went wrong that prevented app to initialize :("));
         }
         if (state is AppFetching) {
           return Center(

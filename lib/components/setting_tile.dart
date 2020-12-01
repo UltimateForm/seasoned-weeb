@@ -43,7 +43,7 @@ class _SettingTileState extends State<SettingTile> {
   Widget build(BuildContext context) {
     return ExpansionTile(
       key: ValueKey("${widget.title}-${_currentChoice.toString()}"),
-      title: Text(widget.title),
+      title: Text(widget.title,),
       subtitle: Text(widget.choices[_currentChoice]),
       leading: widget.icon ?? Icon(Icons.settings),
       children: widget.choices

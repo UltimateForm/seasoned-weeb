@@ -22,6 +22,7 @@ class _SeriesCardState extends State<SeriesCard> {
   List<ImageProvider> images;
   bool showInfo = false;
   ThemeData theme;
+  //ignore: close_sinks
   ConfigBloc config;
   @override
   void initState() {
@@ -47,6 +48,7 @@ class _SeriesCardState extends State<SeriesCard> {
         });
       }).catchError((error) => print(error));
     }
+    config = BlocProvider.of<ConfigBloc>(context);
   }
 
   List<Widget> _createGalleryIndicators(int length) {
@@ -86,11 +88,12 @@ class _SeriesCardState extends State<SeriesCard> {
   @override
   Widget build(BuildContext buildContext) {
     theme = Theme.of(this.context);
-    config = BlocProvider.of<ConfigBloc>(context);
     return GestureDetector(
         onLongPressStart: (s) => _toggleInfo(),
         onLongPressEnd: (s) => _toggleInfo(),
         child: InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
             onTap: _nextPicture,
             child: Container(
                 decoration: BoxDecoration(
@@ -133,7 +136,10 @@ class _SeriesCardState extends State<SeriesCard> {
                                   widget.anime.title,
                                   style: theme.textTheme.headline4,
                                   textAlign: TextAlign.center,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
+                                Divider(),
                                 if (config.config[ConfigKeys.showScores] ==
                                         null ||
                                     config.config[ConfigKeys.showScores] == 0)
@@ -152,6 +158,7 @@ class _SeriesCardState extends State<SeriesCard> {
                                       )
                                     ],
                                   ),
+                                Divider(),
                                 Wrap(
                                     direction: Axis.horizontal,
                                     alignment: WrapAlignment.center,
