@@ -16,19 +16,28 @@ class AppStartFetch extends AppEvent {
 }
 
 class AppBookmarkAnime extends AppEvent {
-  final Anime anime;
+  final int animeId;
 
-  AppBookmarkAnime({@required this.anime}) : assert(anime != null);
+  AppBookmarkAnime({@required this.animeId}) : assert(animeId != null);
 
   @override
-  List<Object> get props => [anime];
+  List<Object> get props => [animeId];
 }
 
 class AppUnbookmarkAnime extends AppEvent {
-  final Anime anime;
+  final Anime animeId;
 
-  AppUnbookmarkAnime({@required this.anime}) : assert(anime != null);
+  AppUnbookmarkAnime({@required this.animeId}) : assert(animeId != null);
 
   @override
-  List<Object> get props => [anime];
+  List<Object> get props => [animeId];
+}
+
+class AppDimissAnime extends AppEvent {
+  final Anime animeId;
+
+  AppDimissAnime({@required this.animeId}) : assert(animeId != null);
+
+  @override
+  List<Object> get props => [animeId];
 }

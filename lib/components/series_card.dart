@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jikan_api/jikan_api.dart';
 import 'package:seasonal_weeb/bloc/app/app_bloc.dart';
 import 'package:seasonal_weeb/bloc/config/config_bloc.dart';
+import 'package:seasonal_weeb/components/genres_chips.dart';
 import 'package:tcard/tcard.dart';
 
 class SeriesCard extends StatefulWidget {
@@ -153,34 +154,15 @@ class _SeriesCardState extends State<SeriesCard> {
                                         color: theme.accentColor,
                                       ),
                                       Text(
-                                        widget.anime.score.toString(),
+                                        widget.anime.score == null
+                                            ? "?"
+                                            : widget.anime.score.toString(),
                                         style: theme.textTheme.bodyText2,
                                       )
                                     ],
                                   ),
                                 Divider(),
-                                Wrap(
-                                    direction: Axis.horizontal,
-                                    alignment: WrapAlignment.center,
-                                    runSpacing: 5,
-                                    spacing: 5,
-                                    children: widget.anime.genres
-                                        .map(
-                                          (genre) => Chip(
-                                              label: Text(
-                                                genre.name,
-                                                style:
-                                                    theme.textTheme.bodyText1,
-                                              ),
-                                              avatar: genre.imageUrl != null
-                                                  ? Image.network(
-                                                      genre.imageUrl)
-                                                  : null,
-                                              materialTapTargetSize:
-                                                  MaterialTapTargetSize
-                                                      .shrinkWrap),
-                                        )
-                                        .toList())
+                                GenresChips(genres: widget.anime.genres)
                               ],
                             )),
                       )

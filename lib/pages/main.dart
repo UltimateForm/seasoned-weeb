@@ -48,11 +48,19 @@ class _MainViewState extends State<MainView> {
           ],
         ),
         body: SizedBox.expand(
-            child: PageView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: _pageController,
-          onPageChanged: (index) => setState(() => _selectedIndex = index),
-          children: [SettingsPage(), SeasonPage(), BookmarksPage()],
+            child: WillPopScope(
+          onWillPop: () async {
+            if (_selectedIndex != 1)
+              await _pageController.animateToPage(1,
+                  duration: Duration(milliseconds: 500), curve: Curves.easeOut);
+            return false;
+          },
+          child: PageView(
+            physics: NeverScrollableScrollPhysics(),
+            controller: _pageController,
+            onPageChanged: (index) => setState(() => _selectedIndex = index),
+            children: [SettingsPage(), SeasonPage(), BookmarksPage()],
+          ),
         )));
   }
 }

@@ -12,12 +12,24 @@ class AppInitialState extends AppState {}
 
 class AppFetching extends AppState {}
 
-class AppFetchCompleted extends AppState {
+class AppReady extends AppState {
   final Season season;
-  const AppFetchCompleted({@required this.season}) : assert(season != null);
+  final Iterable<int> bookmarks;
+  final Iterable<int> dismissed;
+  const AppReady(this.bookmarks, this.dismissed, {@required this.season})
+      : assert(season != null);
 
   @override
   List<Object> get props => [season];
+}
+
+class AppSyncing extends AppState {}
+
+class AppFetchCompleted extends AppReady {
+  const AppFetchCompleted(Iterable<int> bookmarks, Iterable<int> dismissed,
+      {@required Season season})
+      : assert(season != null),
+        super(bookmarks, dismissed, season: season);
 }
 
 class AppFetchFailed extends AppState {

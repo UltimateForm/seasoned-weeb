@@ -10,7 +10,7 @@ class GenresChips extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
 
-    throw Wrap(
+    return Wrap(
         direction: Axis.horizontal,
         alignment: WrapAlignment.center,
         runSpacing: 5,

@@ -9,7 +9,6 @@ ThemeMode configThemeToAppThemeMode(ConfigState state) {
   if (state is ConfigLoading || state is ConfigError) {
     return ThemeMode.system;
   } else if (state is ConfigReady) {
-    print(state.config);
     int themeVal = state.config[ConfigKeys.theme] ?? 0;
     return ThemeMode.values[themeVal];
   } else
