@@ -4,7 +4,8 @@ A solution to annoyinng weekly cliffhangers
 ## Screenshots
 ### Main Page
 Can swipe left to dismiss and right to bookmark
-![main page](https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211359.png)
+
+<img alt="mainPage" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211359.png" height="100"/>
 ### Main page view pictures
 Can view pictures associated with series by taping
 ![pictures](https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211423.png)
