@@ -15,7 +15,7 @@ Can view pictures associated with series by taping
 ### Main page details
 Can view details by long pressing
 
-<img alt="main page details" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211457" height="600"/>
+<img alt="main page details" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211457.png" height="600"/>
 
 ### Bookmarks page:
 
