@@ -37,7 +37,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
     super.initState();
     // ignore: close_sinks
     AppBloc bloc = BlocProvider.of<AppBloc>(context);
-    Iterable<int> ids = bloc.seasonAnime.take(10).map((e) => e.malId);
+    Iterable<int> ids = bloc.bookmarked;
     _animeStreamSubscription = _animeStream(ids).listen((event) {
       if (this.mounted)
         setState(() {
@@ -93,10 +93,14 @@ class _BookmarksPageState extends State<BookmarksPage> {
     if (data == null) return CircularProgressIndicator();
     String percentageTxt = "?";
     int percentage = 0;
-    try {
-      percentage = (data.getFraction() * 100).round();
-      percentageTxt = "${anime.airing ? percentage.toString() : "100"}%";
-    } catch (e) {}
+    if (!anime.airing) {
+      percentage = 100;
+      percentageTxt = "100%";
+    } else
+      try {
+        percentage = (data.getFraction() * 100).round();
+        percentageTxt = "${percentage.toString()}%";
+      } catch (e) {}
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -112,10 +116,10 @@ class _BookmarksPageState extends State<BookmarksPage> {
     );
   }
 
-  Widget _buildList(Iterable<AnimeItem> items, BuildContext context) {
+  Widget _buildList(List<int> bookmarks, BuildContext context) {
     // ignore: close_sinks
     return ListView.separated(
-      itemCount: 10,
+      itemCount: bookmarks.length,
       itemBuilder: (ctnxt, index) {
         if (index >= loadedAnimes.length)
           return SizedBox(
@@ -155,7 +159,10 @@ class _BookmarksPageState extends State<BookmarksPage> {
                         .firstWhere((element) => element.malId == e.malId),
                     context),
                 title: Text(e.title),
-                subtitle: e.genres.length > 0 ? Text(e.genres[0].name) : null,
+                subtitle: e.genres.length > 0
+                    ? Text(
+                        "${e.genres[0].name}${e.genres.length > 1 ? ", " + e.genres[1].name : ""}")
+                    : null,
                 trailing: _getCompletionIndicator(e))
           ],
         );
@@ -181,10 +188,27 @@ class _BookmarksPageState extends State<BookmarksPage> {
         );
       }
       if (state is AppReady) {
-        return _buildList(state.season.anime.take(10), buildContext);
+        if (state.bookmarks.isEmpty) {
+          return Center(
+            child: Icon(
+              Icons.turned_in_not_outlined,
+              size: 70,
+            ),
+          );
+        }
+        return _buildList(state.bookmarks, buildContext);
       }
       if (state is AppFetchFailed) {
-        return Text(state.failureReason, style: TextStyle(color: Colors.red));
+        return AlertDialog(
+            title: Text(
+                "It seems like the app failed to download necessary data over the internet, make sure you're connected to the internet",
+                style: Theme.of(context).textTheme.bodyText1));
+      }
+      if (state is AppFailedToLoadData) {
+        return AlertDialog(
+            title: Text(
+                "It seems like the app failed to load saved data :/\nTry restarting the application",
+                style: Theme.of(context).textTheme.bodyText1));
       } else
         return AlertDialog(
             title: Text("Uh oh, something went wrong...",

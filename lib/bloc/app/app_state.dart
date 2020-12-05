@@ -12,32 +12,46 @@ class AppInitialState extends AppState {}
 
 class AppFetching extends AppState {}
 
+class AppLoading extends AppState {}
+
 class AppReady extends AppState {
-  final Season season;
+  final Iterable<AnimeItem> animes;
   final Iterable<int> bookmarks;
   final Iterable<int> dismissed;
-  const AppReady(this.bookmarks, this.dismissed, {@required this.season})
-      : assert(season != null);
+  const AppReady(this.bookmarks, this.dismissed, {@required this.animes});
 
   @override
-  List<Object> get props => [season];
+  List<Object> get props => [bookmarks, dismissed, animes];
 }
 
-class AppSyncing extends AppState {}
+class AppSyncing extends AppReady {
+  AppSyncing(Iterable<int> bookmarks, Iterable<int> dismissed,
+      {@required Iterable<AnimeItem> animes})
+      : super(bookmarks, dismissed, animes: animes);
+}
 
 class AppFetchCompleted extends AppReady {
   const AppFetchCompleted(Iterable<int> bookmarks, Iterable<int> dismissed,
-      {@required Season season})
-      : assert(season != null),
-        super(bookmarks, dismissed, season: season);
+      {@required Iterable<AnimeItem> animes})
+      : super(bookmarks, dismissed, animes: animes);
 }
 
-class AppFetchFailed extends AppState {
+class AppFailure extends AppState {
   final String failureReason;
 
-  AppFetchFailed({@required this.failureReason})
+  AppFailure({@required this.failureReason})
       : assert(failureReason != null && failureReason.isNotEmpty);
 
   @override
   List<Object> get props => [failureReason];
+}
+
+class AppFetchFailed extends AppFailure {
+  AppFetchFailed({@required String failureReason})
+      : super(failureReason: failureReason);
+}
+
+class AppFailedToLoadData extends AppFailure {
+  AppFailedToLoadData({@required String failureReason})
+      : super(failureReason: failureReason);
 }

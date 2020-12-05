@@ -3,6 +3,9 @@ part of 'app_bloc.dart';
 @immutable
 abstract class AppEvent extends Equatable {
   const AppEvent();
+
+    @override
+  List<Object> get props => [];
 }
 
 class AppStartFetch extends AppEvent {
@@ -25,7 +28,7 @@ class AppBookmarkAnime extends AppEvent {
 }
 
 class AppUnbookmarkAnime extends AppEvent {
-  final Anime animeId;
+  final int animeId;
 
   AppUnbookmarkAnime({@required this.animeId}) : assert(animeId != null);
 
@@ -34,10 +37,12 @@ class AppUnbookmarkAnime extends AppEvent {
 }
 
 class AppDimissAnime extends AppEvent {
-  final Anime animeId;
+  final int animeId;
 
   AppDimissAnime({@required this.animeId}) : assert(animeId != null);
 
   @override
   List<Object> get props => [animeId];
 }
+
+class AppLoad extends AppEvent {}

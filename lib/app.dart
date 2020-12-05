@@ -45,7 +45,8 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
         providers: [
           BlocProvider<AppBloc>(
-              create: (context) => AppBloc(jikan: jikan)..add(AppStartFetch())),
+              create: (context) =>
+                  AppBloc(jikan: jikan)..add(AppLoad())..add(AppStartFetch())),
           BlocProvider<ConfigBloc>(
             create: (context) => ConfigBloc(ConfigInitialState({
               ConfigKeys.adultContent: 0,
