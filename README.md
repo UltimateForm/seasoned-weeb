@@ -5,17 +5,27 @@ A solution to annoyinng weekly cliffhangers
 ### Main Page
 Can swipe left to dismiss and right to bookmark
 
-<img alt="mainPage" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211359.png" height="100"/>
+<img alt="mainPage" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211359.png" height="600" />
+  
 ### Main page view pictures
 Can view pictures associated with series by taping
-![pictures](https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211423.png)
+
+<img alt="pictures" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211423.png" height="600"/>
+
 ### Main page details
 Can view details by long pressing
-![main page details](https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211457.png)
+
+<img alt="main page details" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211457" height="600"/>
+
 ### Bookmarks page:
-![bookmarks page](https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211303.png)
+
+<img alt="bookmarks page" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211303.png" height="600"/>
+
 ### Bookmark detail:
-![bookmark detail](https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211347.png)
+
+<img alt="bookmark detail" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211347.png" height="600"/>
+
 ### Settings page
 Can customize how and which anime are presented on main page
-![settings](https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211508.png)
+
+<img alt="bookmark detail" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211508.png" height="600"/>
