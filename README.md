@@ -1,3 +1,5 @@
+<div style="text-align:center"><img src="assets/images/ic_launcher.png" /></div>
+
 # seasoned-weeb
 A solution to annoyinng weekly cliffhangers
 
