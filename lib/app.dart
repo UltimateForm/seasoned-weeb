@@ -33,6 +33,8 @@ var darkTheme = ThemeData(
   ),
 );
 
+int initialKey = 0;
+
 class App extends StatelessWidget {
   final Jikan jikan;
 
@@ -57,20 +59,25 @@ class App extends StatelessWidget {
               ..add(LoadConfig()),
           )
         ],
-        child: BlocBuilder<ConfigBloc, ConfigState>(
-            builder: (context, state) => MaterialApp(
-                  theme: ThemeData(
-                      brightness: Brightness.light,
-                      primaryColor: Colors.deepOrange,
-                      accentColor: Colors.deepOrangeAccent),
-                  darkTheme: ThemeData(
-                      brightness: Brightness.dark,
-                      primaryColor: Colors.deepOrange,
-                      accentColor: Colors.deepOrangeAccent
-                      /* dark theme settings */
-                      ),
-                  themeMode: configThemeToAppThemeMode(state),
-                  home: MainView(),
-                )));
+        child: BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {
+          return MaterialApp(
+            theme: ThemeData(
+                brightness: Brightness.light,
+                primaryColor: Colors.deepOrange,
+                accentColor: Colors.deepOrangeAccent),
+            darkTheme: ThemeData(
+                brightness: Brightness.dark,
+                primaryColor: Colors.deepOrange,
+                accentColor: Colors.deepOrangeAccent
+                /* dark theme settings */
+                ),
+            themeMode: configThemeToAppThemeMode(state),
+            home: state is ConfigDataClearing
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : MainView(),
+          );
+        }));
   }
 }

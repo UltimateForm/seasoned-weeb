@@ -8,12 +8,14 @@ class SettingTile extends StatefulWidget {
   final int initialValue;
   final Widget icon;
   final SettingTileOnChange onChange;
+  final bool hideCurrentlySelected;
   SettingTile(
       {@required this.title,
       @required this.choices,
       this.initialValue = 0,
       this.icon,
-      this.onChange})
+      this.onChange,
+      this.hideCurrentlySelected = false})
       : super();
 
   @override
@@ -43,8 +45,12 @@ class _SettingTileState extends State<SettingTile> {
   Widget build(BuildContext context) {
     return ExpansionTile(
       key: ValueKey("${widget.title}-${_currentChoice.toString()}"),
-      title: Text(widget.title,),
-      subtitle: Text(widget.choices[_currentChoice]),
+      title: Text(
+        widget.title,
+      ),
+      subtitle: widget.hideCurrentlySelected
+          ? null
+          : Text(widget.choices[_currentChoice]),
       leading: widget.icon ?? Icon(Icons.settings),
       children: widget.choices
           .map((e) => ListTile(

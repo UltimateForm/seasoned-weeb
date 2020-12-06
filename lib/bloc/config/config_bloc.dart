@@ -58,6 +58,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       }
     }
     if (event is ResetPreferences) {
+      yield ConfigDataClearing(config, sectionCleared: event.sectionToReset);
       switch (event.sectionToReset) {
         case ConfigDataSection.bookmarkedSeries:
           await prefs.remove(bookmarkedPrefKey);
@@ -72,7 +73,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
         default:
           await prefs.clear();
       }
-      yield ConfigDataCleared(config, sectionCleared: event.sectionToReset);
+      yield ConfigReady(config);
     }
   }
 }
