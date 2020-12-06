@@ -20,3 +20,12 @@ class SetConfig extends ConfigEvent {
   @override
   List<Object> get props => [key, value];
 }
+
+class ResetPreferences extends ConfigEvent {
+  final ConfigDataSection sectionToReset;
+
+  ResetPreferences({@required this.sectionToReset});
+
+  @override
+  List<Object> get props => [sectionToReset];
+}

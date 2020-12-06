@@ -73,12 +73,14 @@ class SeasonPage extends StatelessWidget {
           );
         }
         if (state is AppReady) {
-          return TCard(
-              controller: _controller,
-              onForward: (index, info) => _onSwiped(index, info, buildContext),
-              size: Size(400, 600),
-              cards: _buildList(
-                  state.animes, state.bookmarks, state.dismissed, context));
+          return SafeArea(
+                      child: TCard(
+                controller: _controller,
+                onForward: (index, info) => _onSwiped(index, info, buildContext),
+                size: Size(400, 600),
+                cards: _buildList(
+                    state.animes, state.bookmarks, state.dismissed, context)),
+          );
         }
         if (state is AppFetchFailed) {
           return AlertDialog(

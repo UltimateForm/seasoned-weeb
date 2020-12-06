@@ -3,13 +3,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import "package:jikan_api/jikan_api.dart";
+import '../utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
-
-const String dismissedPrefKey = "dismissed";
-const String bookmarkedPrefKey = "bookmarked";
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   final Jikan jikan;

@@ -39,3 +39,13 @@ class ConfigError extends ConfigState {
   @override
   List<Object> get props => [error];
 }
+
+class ConfigDataCleared extends ConfigReady {
+  final ConfigDataSection sectionCleared;
+  ConfigDataCleared(Map<ConfigKeys, int> config,
+      {@required this.sectionCleared})
+      : super(config);
+
+  @override
+  List<Object> get props => [sectionCleared, config];
+}

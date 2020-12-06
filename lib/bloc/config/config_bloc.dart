@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import '../utils/constants.dart';
 
 part 'config_event.dart';
 part 'config_state.dart';
@@ -16,6 +17,8 @@ class Config {
 }
 
 enum ConfigKeys { theme, adultContent, showScores, scoreThreshold }
+
+enum ConfigDataSection { all, preferences, dimissedSeries, bookmarkedSeries }
 
 class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
   Map<ConfigKeys, int> config;
@@ -53,6 +56,23 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
       } catch (e) {
         yield ConfigError(e.toString());
       }
+    }
+    if (event is ResetPreferences) {
+      switch (event.sectionToReset) {
+        case ConfigDataSection.bookmarkedSeries:
+          await prefs.remove(bookmarkedPrefKey);
+          break;
+        case ConfigDataSection.dimissedSeries:
+          await prefs.remove(dismissedPrefKey);
+          break;
+        case ConfigDataSection.preferences:
+          for (var key in ConfigKeys.values)
+            await prefs.remove(EnumToString.convertToString(key));
+          break;
+        default:
+          await prefs.clear();
+      }
+      yield ConfigDataCleared(config, sectionCleared: event.sectionToReset);
     }
   }
 }
