@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import "package:jikan_api/jikan_api.dart";
+import 'package:seasonal_weeb/bloc/config/config_bloc.dart';
 import '../utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,13 +13,31 @@ part 'app_state.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   final Jikan jikan;
   SharedPreferences prefs;
-  AppBloc({@required this.jikan})
-      : assert(jikan != null),
-        super(AppInitialState());
   Iterable<AnimeItem> seasonAnime = [];
   Season season;
   List<int> dismissed = [];
   List<int> bookmarked = [];
+  StreamSubscription configListener;
+  AppBloc(ConfigBloc configBloc, {@required this.jikan})
+      : assert(jikan != null),
+        super(AppInitialState()) {
+    if (configBloc != null) {
+      configListener = configBloc.listen((ConfigState state) {
+        if (state is ConfigDataCleared) {
+          if (state.sectionCleared != ConfigDataSection.preferences) {
+            add(AppLoad());
+          }
+        }
+      });
+    }
+  }
+
+  @override
+  Future<void> close() async {
+    await configListener.cancel();
+    return super.close();
+  }
+
   @override
   Stream<AppState> mapEventToState(AppEvent event) async* {
     if (state is AppFailedToLoadData && event != AppLoad()) {
@@ -47,7 +66,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
                 })
                 .where((n) => n != null)
                 .toList();
-        yield AppReady(bookmarked, dismissed, animes: null);
+        yield AppReady(bookmarked, dismissed, animes: seasonAnime);
       } catch (e) {
         print(e.toString());
         yield AppFailedToLoadData(failureReason: e.toString());

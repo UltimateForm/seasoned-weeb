@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:seasonal_weeb/bloc/app/app_bloc.dart';
 import 'package:seasonal_weeb/bloc/config/config_bloc.dart';
 import '../components/setting_tile.dart';
 
@@ -80,16 +79,8 @@ class SettingsPage extends StatelessWidget {
                 var target = ConfigDataSection.values[value];
                 // ignore: close_sinks
                 var configBloc = buildContext.read<ConfigBloc>();
-                configBloc.add(ResetPreferences(
-                    sectionToReset: target));
+                configBloc.add(ResetPreferences(sectionToReset: target));
                 configBloc.add(LoadConfig());
-                if(target != ConfigDataSection.preferences){
-                  print("here");
-                  // ignore: close_sinks
-                  var dataBloc = buildContext.read<AppBloc>();
-                  dataBloc.add(AppLoad());
-                }
-                // TODO: this is dirty - AND DOESNT WORK LOL -, move it somewhere else...
               },
             ),
           ]).toList(),

@@ -44,21 +44,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider<AppBloc>(
-              create: (context) =>
-                  AppBloc(jikan: jikan)..add(AppLoad())..add(AppStartFetch())),
-          BlocProvider<ConfigBloc>(
-            create: (context) => ConfigBloc(ConfigInitialState({
-              ConfigKeys.adultContent: 0,
-              ConfigKeys.scoreThreshold: 0,
-              ConfigKeys.showScores: 0,
-              ConfigKeys.theme: 0
-            }))
-              ..add(LoadConfig()),
-          )
-        ],
+    return BlocProvider<AppBloc>(
+        create: (context) =>
+            AppBloc(BlocProvider.of<ConfigBloc>(context), jikan: jikan)
+              ..add(AppLoad())
+              ..add(AppStartFetch()),
         child: BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {
           return MaterialApp(
             theme: ThemeData(

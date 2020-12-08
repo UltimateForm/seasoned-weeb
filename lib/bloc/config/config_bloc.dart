@@ -73,7 +73,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
         default:
           await prefs.clear();
       }
-      yield ConfigReady(config);
+      yield ConfigDataCleared(config, sectionCleared:event.sectionToReset);
     }
   }
 }
