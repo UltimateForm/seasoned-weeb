@@ -20,6 +20,7 @@ Can view details by long pressing
 <img alt="main page details" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211457.png" height="600"/>
 
 ### Bookmarks page:
+Shows completion percentage
 
 <img alt="bookmarks page" src="https://github.com/UltimateForm/seasoned-weeb/raw/master/assets/demo_screenshots/Screenshot_20201205-211303.png" height="600"/>
 
