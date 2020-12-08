@@ -116,17 +116,44 @@ class _BookmarksPageState extends State<BookmarksPage> {
     );
   }
 
+  String _getThatStringWeTalkedAboutTheFamilarCaptionOnTheBottomOfTheList(
+      int bookmarksLength) {
+    if (bookmarksLength < 3) return "well maybe this season just ain't it...";
+    if (bookmarksLength < 5) return "hmm yes, this is a gourmet selection";
+    if (bookmarksLength < 10)
+      return "that\'s a lot of weeb";
+    if (bookmarksLength < 20)
+      return "i mean...it's your time...";
+    return "you weeb";
+  }
+
   Widget _buildList(List<int> bookmarks, BuildContext context) {
+    ThemeData theme = Theme.of(context);
     // ignore: close_sinks
     return ListView.separated(
-      itemCount: bookmarks.length,
+      itemCount: bookmarks.length +
+          1, //no worries, always has something if it gets to this point
       itemBuilder: (ctnxt, index) {
+        if (index == bookmarks.length) {
+          return SizedBox(
+            child: ListTile(
+                title: Text(
+              _getThatStringWeTalkedAboutTheFamilarCaptionOnTheBottomOfTheList(
+                  bookmarks.length),
+              style: theme.textTheme.caption,
+              textAlign: TextAlign.center,
+            )),
+            height: 70,
+            width: double.infinity,
+          );
+        }
         if (index >= loadedAnimes.length)
           return SizedBox(
             child: ListTile(trailing: CircularProgressIndicator()),
             height: 70,
             width: double.infinity,
           );
+
         Anime e = loadedAnimes[index];
         return Stack(
           key: Key(e.malId.toString()),
@@ -167,10 +194,13 @@ class _BookmarksPageState extends State<BookmarksPage> {
           ],
         );
       },
-      separatorBuilder: (BuildContext context, int index) => Divider(
-        height: 1,
-        indent: 0,
-      ),
+      separatorBuilder: (BuildContext context, int index) {
+        print("divider at $index and length of items is ${bookmarks.length}");
+        return Divider(
+          height: 1,
+          indent: 0,
+        );
+      },
     );
   }
 

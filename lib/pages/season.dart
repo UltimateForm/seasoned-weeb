@@ -47,8 +47,8 @@ class SeasonPage extends StatelessWidget {
   _onSwiped(int index, SwipInfo swipeInfo, BuildContext context) {
     // ignore: close_sinks
     var bloc = BlocProvider.of<AppBloc>(context);
-    var swipedAnime = _seasonAnimes[swipeInfo.cardIndex];
-    print("Swiped ${swipedAnime.title} to ${swipeInfo.direction}");
+    var swipedAnime = _seasonAnimes[0]; //always 0 because this screen is refreshed everytime you swipe, and _buildList gives us new updated list without the dimissed/bookmarked ones ;O
+    print("Swiped ${swipedAnime.title} to ${swipeInfo.direction}, swipeInfo card index:${swipeInfo.cardIndex}, method index:$index");
     if (swipeInfo.direction == SwipDirection.Left) {
       bloc.add(AppDimissAnime(animeId: swipedAnime.malId));
     }
