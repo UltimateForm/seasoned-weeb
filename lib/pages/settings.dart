@@ -38,6 +38,16 @@ class SettingsPage extends StatelessWidget {
                   .add(SetConfig(ConfigKeys.adultContent, value)),
             ),
             SettingTile(
+              title: "Movies",
+              choices: ["Show", "Hide"],
+              icon: Icon(Icons.theaters),
+              initialValue:
+                  (state as ConfigReady).config[ConfigKeys.movies] ?? 0,
+              onChange: (value) => buildContext
+                  .read<ConfigBloc>()
+                  .add(SetConfig(ConfigKeys.movies, value)),
+            ),
+            SettingTile(
               title: "Scores",
               choices: ["Show", "Hide"],
               icon: Icon(Icons.star),

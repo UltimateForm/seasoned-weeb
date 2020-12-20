@@ -9,14 +9,7 @@ import '../utils/constants.dart';
 part 'config_event.dart';
 part 'config_state.dart';
 
-class Config {
-  int theme;
-  bool adultContent;
-  bool showScores;
-  int scoreThreshold;
-}
-
-enum ConfigKeys { theme, adultContent, showScores, scoreThreshold }
+enum ConfigKeys { theme, adultContent, showScores, scoreThreshold, movies }
 
 enum ConfigDataSection { all, preferences, dimissedSeries, bookmarkedSeries }
 

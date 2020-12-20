@@ -75,9 +75,9 @@ class _BookmarkDetailState extends State<BookmarkDetail> {
                               "${widget.anime.episodes} episodes",
                               style: theme.textTheme.headline6,
                             ),
-                            if (widget.airedEpisodesCount != null)
+                            if (widget.airedEpisodesCount != null && widget.airedEpisodesCount>0)
                               Text(
-                                  "${widget.airedEpisodesCount.toString()} aired",
+                                  "${widget.anime.airing ? widget.airedEpisodesCount.toString() : "All"} aired",
                                   style: theme.textTheme.subtitle1)
                           ],
                         ),
@@ -92,7 +92,8 @@ class _BookmarkDetailState extends State<BookmarkDetail> {
                     child: FractionalTranslation(
                       translation: Offset(-0.5, -0.5),
                       child: CircleAvatar(
-                          child: Text(widget.anime.score.toInt().toString(),
+                          child: Text(
+                              (widget.anime.score?.toInt() ?? "?").toString(),
                               style: theme.textTheme.bodyText2),
                           backgroundColor: theme.accentColor),
                     ),

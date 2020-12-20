@@ -30,6 +30,12 @@ class SeasonPage extends StatelessWidget {
           .toList();
     }
 
+    // filter movies
+    if (config.config[ConfigKeys.movies] != null &&
+        config.config[ConfigKeys.movies] == 1) {
+      _seasonAnimes = _seasonAnimes.where((a) => a.type != "Movie").toList();
+    }
+
     // filter dismissed and bookmarked
     List<int> skippedIds = bookmarkedAnime + dismissedAnime;
     _seasonAnimes =
@@ -47,8 +53,10 @@ class SeasonPage extends StatelessWidget {
   _onSwiped(int index, SwipInfo swipeInfo, BuildContext context) {
     // ignore: close_sinks
     var bloc = BlocProvider.of<AppBloc>(context);
-    var swipedAnime = _seasonAnimes[0]; //always 0 because this screen is refreshed everytime you swipe, and _buildList gives us new updated list without the dimissed/bookmarked ones ;O
-    print("Swiped ${swipedAnime.title} to ${swipeInfo.direction}, swipeInfo card index:${swipeInfo.cardIndex}, method index:$index");
+    var swipedAnime = _seasonAnimes[
+        0]; //always 0 because this screen is refreshed everytime you swipe, and _buildList gives us new updated list without the dimissed/bookmarked ones ;O
+    print(
+        "Swiped ${swipedAnime.title} to ${swipeInfo.direction}, swipeInfo card index:${swipeInfo.cardIndex}, method index:$index");
     if (swipeInfo.direction == SwipDirection.Left) {
       bloc.add(AppDimissAnime(animeId: swipedAnime.malId));
     }
@@ -74,9 +82,10 @@ class SeasonPage extends StatelessWidget {
         }
         if (state is AppReady) {
           return SafeArea(
-                      child: TCard(
+            child: TCard(
                 controller: _controller,
-                onForward: (index, info) => _onSwiped(index, info, buildContext),
+                onForward: (index, info) =>
+                    _onSwiped(index, info, buildContext),
                 size: Size(400, 600),
                 cards: _buildList(
                     state.animes, state.bookmarks, state.dismissed, context)),

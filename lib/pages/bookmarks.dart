@@ -96,7 +96,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
     if (!anime.airing) {
       percentage = 100;
       percentageTxt = "100%";
-    } else
+    } else if (data.airedEpisodes!=null && data.airedEpisodes>0)
       try {
         percentage = (data.getFraction() * 100).round();
         percentageTxt = "${percentage.toString()}%";
@@ -120,10 +120,8 @@ class _BookmarksPageState extends State<BookmarksPage> {
       int bookmarksLength) {
     if (bookmarksLength < 3) return "well maybe this season just ain't it...";
     if (bookmarksLength < 5) return "hmm yes, this is a gourmet selection";
-    if (bookmarksLength < 10)
-      return "that\'s a lot of weeb";
-    if (bookmarksLength < 20)
-      return "i mean...it's your time...";
+    if (bookmarksLength < 10) return "that\'s a lot of weeb";
+    if (bookmarksLength < 20) return "i mean...it's your time...";
     return "you weeb";
   }
 
@@ -195,7 +193,6 @@ class _BookmarksPageState extends State<BookmarksPage> {
         );
       },
       separatorBuilder: (BuildContext context, int index) {
-        print("divider at $index and length of items is ${bookmarks.length}");
         return Divider(
           height: 1,
           indent: 0,
