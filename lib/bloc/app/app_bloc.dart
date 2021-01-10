@@ -17,11 +17,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   Season season;
   List<int> dismissed = [];
   List<int> bookmarked = [];
+  Map<int, Anime> cachedAnimes;
   StreamSubscription configListener;
   AppBloc(ConfigBloc configBloc, {@required this.jikan})
       : assert(jikan != null),
         super(AppInitialState()) {
     if (configBloc != null) {
+      cachedAnimes = new Map<int,Anime>();
       configListener = configBloc.listen((ConfigState state) {
         if (state is ConfigDataCleared) {
           if (state.sectionCleared != ConfigDataSection.preferences) {
@@ -30,6 +32,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         }
       });
     }
+  }
+
+  Future<Anime> getAnime(int animeId) async {
+    if(cachedAnimes.containsKey(animeId))return cachedAnimes[animeId];
+    var anime = await jikan.getAnimeInfo(animeId);
+    cachedAnimes[animeId] = anime;
+    return anime;
   }
 
   @override

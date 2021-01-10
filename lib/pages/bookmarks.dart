@@ -82,7 +82,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
     // ignore: close_sinks
     AppBloc bloc = BlocProvider.of<AppBloc>(context);
     for (var id in animeIds) {
-      Anime actualAnime = await bloc.jikan.getAnimeInfo(id);
+      Anime actualAnime = await bloc.getAnime(id);
       yield actualAnime;
     }
   }
