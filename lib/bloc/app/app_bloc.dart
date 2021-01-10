@@ -23,7 +23,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       : assert(jikan != null),
         super(AppInitialState()) {
     if (configBloc != null) {
-      cachedAnimes = new Map<int,Anime>();
+      cachedAnimes = new Map<int, Anime>();
       configListener = configBloc.listen((ConfigState state) {
         if (state is ConfigDataCleared) {
           if (state.sectionCleared != ConfigDataSection.preferences) {
@@ -35,7 +35,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   }
 
   Future<Anime> getAnime(int animeId) async {
-    if(cachedAnimes.containsKey(animeId))return cachedAnimes[animeId];
+    if (cachedAnimes.containsKey(animeId)) return cachedAnimes[animeId];
     var anime = await jikan.getAnimeInfo(animeId);
     cachedAnimes[animeId] = anime;
     return anime;
@@ -91,12 +91,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         yield AppFetchFailed(failureReason: e.toString());
       }
     } else if (event is AppBookmarkAnime) {
+      dismissed.remove(event
+          .animeId); // because we might be bookmarking from Boookmarks page chief (as Dimiss undo)
       bookmarked.add(event.animeId);
       yield AppSyncing(bookmarked, dismissed, animes: seasonAnime);
       await prefs.setStringList(
           bookmarkedPrefKey, bookmarked.map((e) => e.toString()).toList());
       yield AppReady(bookmarked, dismissed, animes: seasonAnime);
     } else if (event is AppDimissAnime) {
+      bookmarked.remove(event
+          .animeId); // because we might be dimissing from Boookmarks page chief
       dismissed.add(event.animeId);
       yield AppSyncing(bookmarked, dismissed, animes: seasonAnime);
       await prefs.setStringList(
