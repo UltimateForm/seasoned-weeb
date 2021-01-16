@@ -86,7 +86,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
   Future<CompletionData> _getCompletionDataForAnime(Anime anime) async {
     // ignore: close_sinks
     AppBloc bloc = BlocProvider.of<AppBloc>(context);
-    var episodes = await bloc.jikan.getAnimeEpisodes(anime.malId);
+    var episodes = await bloc.getCachedAnimeResponse(bloc.jikan.getAnimeEpisodes, anime.malId);
     return CompletionData(episodes.length, anime.episodes, anime.airing);
   }
 
@@ -95,7 +95,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
     AppBloc bloc = BlocProvider.of<AppBloc>(context);
     for (var id in animeIds.where(
         (element) => !loadedAnimes.any((anime) => anime.malId == element))) {
-      Anime actualAnime = await bloc.getAnime(id);
+      Anime actualAnime = await bloc.getCachedAnimeResponse(bloc.jikan.getAnimeInfo, id);
       yield actualAnime;
     }
   }
@@ -141,7 +141,6 @@ class _BookmarksPageState extends State<BookmarksPage> {
   Widget _buildList(List<int> bookmarks, BuildContext context) {
     ThemeData theme = Theme.of(context);
     // ignore: close_sinks
-    print("Building list ${bookmarks.join(";")}");
     return ListView.separated(
       itemCount: bookmarks.length +
           1, //no worries, always has something if it gets to this point

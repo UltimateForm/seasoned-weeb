@@ -29,9 +29,9 @@ class _SeriesCardState extends State<SeriesCard> {
   void initState() {
     super.initState();
     if (widget.index == widget.parentController.index) {
-      BlocProvider.of<AppBloc>(context)
-          .jikan
-          .getAnimePictures(widget.anime.malId)
+        //ignore: close_sinks
+      var bloc = BlocProvider.of<AppBloc>(context);
+      bloc.getCachedAnimeResponse(bloc.jikan.getAnimePictures, widget.anime.malId)
           .then((value) async {
         final networkImages =
             value.reversed.map((p) => p.large).toSet().map((url) {

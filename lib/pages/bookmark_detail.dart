@@ -23,9 +23,9 @@ class _BookmarkDetailState extends State<BookmarkDetail> {
   void initState() {
     super.initState();
     // ignore: close_sinks
-    BlocProvider.of<AppBloc>(context)
-        .jikan
-        .getAnimePictures(widget.anime.malId)
+    var bloc = BlocProvider.of<AppBloc>(context);
+    bloc
+        .getCachedAnimeResponse(bloc.jikan.getAnimePictures, widget.anime.malId)
         .then((value) async {
       final networkImages =
           value.reversed.map((p) => p.large).toSet().map((url) {
@@ -75,7 +75,8 @@ class _BookmarkDetailState extends State<BookmarkDetail> {
                               "${widget.anime.episodes} episodes",
                               style: theme.textTheme.headline6,
                             ),
-                            if (widget.airedEpisodesCount != null && widget.airedEpisodesCount>0)
+                            if (widget.airedEpisodesCount != null &&
+                                widget.airedEpisodesCount > 0)
                               Text(
                                   "${widget.anime.airing ? widget.airedEpisodesCount.toString() : "All"} aired",
                                   style: theme.textTheme.subtitle1)
