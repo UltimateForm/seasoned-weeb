@@ -1,17 +1,21 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jikan_api/jikan_api.dart';
-import 'package:seasonal_weeb/bloc/app/app_bloc.dart';
-import './bookmark_detail.dart';
+import '../bloc/app/app_bloc.dart';
+import 'bookmark_detail.dart';
 
 // #TODO: refactor this whole mess wtf, the way I'm handling the swipe-2-dismiss here is not pretty, and probably not optimal and don't even get me started on the undo
 // fix this
 
 class BookmarksPage extends StatefulWidget {
+  const BookmarksPage({super.key});
+
   @override
-  _BookmarksPageState createState() => _BookmarksPageState();
+  BookmarksPageState createState() => BookmarksPageState();
 }
 
 @immutable
@@ -20,7 +24,7 @@ class CompletionData extends Equatable {
   final int totalEpisodes;
   final bool airing;
 
-  CompletionData(this.airedEpisodes, this.totalEpisodes, this.airing);
+  const CompletionData(this.airedEpisodes, this.totalEpisodes, this.airing);
 
   double getFraction() {
     return airedEpisodes / totalEpisodes;
@@ -30,12 +34,12 @@ class CompletionData extends Equatable {
   List<Object> get props => [airedEpisodes, totalEpisodes, airing];
 }
 
-class _BookmarksPageState extends State<BookmarksPage> {
+class BookmarksPageState extends State<BookmarksPage> {
   List<Anime> loadedAnimes = [];
-  StreamSubscription _animeStreamSubscription;
+  StreamSubscription? _animeStreamSubscription;
   Map<int, CompletionData> animeCompletionData = {};
   // ignore: close_sinks
-  AppBloc bloc;
+  late AppBloc bloc;
   @override
   void initState() {
     super.initState();
@@ -47,18 +51,20 @@ class _BookmarksPageState extends State<BookmarksPage> {
   void _refreshListener(Iterable<int> ids) {
     _animeStreamSubscription?.cancel();
     _animeStreamSubscription = _animeStream(ids).listen((event) {
-      if (this.mounted)
+      if (mounted) {
         setState(() {
           loadedAnimes.add(event);
         });
+      }
       _getCompletionDataForAnime(event).then((value) {
-        if (this.mounted)
+        if (mounted) {
           setState(() {
             animeCompletionData[event.malId] = value;
           });
+        }
       });
       if (loadedAnimes.length >= ids.length) {
-        _animeStreamSubscription.cancel();
+        _animeStreamSubscription?.cancel();
         _animeStreamSubscription = null;
       }
     });
@@ -78,7 +84,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
                   body: BookmarkDetail(
                 anime: item,
                 airedEpisodesCount:
-                    animeCompletionData[item.malId].airedEpisodes,
+                    animeCompletionData[item.malId]?.airedEpisodes ?? 0,
               ))),
     );
   }
@@ -86,8 +92,9 @@ class _BookmarksPageState extends State<BookmarksPage> {
   Future<CompletionData> _getCompletionDataForAnime(Anime anime) async {
     // ignore: close_sinks
     AppBloc bloc = BlocProvider.of<AppBloc>(context);
-    var episodes = await bloc.getCachedAnimeResponse(bloc.jikan.getAnimeEpisodes, anime.malId);
-    return CompletionData(episodes.length, anime.episodes, anime.airing);
+    var episodes = await bloc.getCachedAnimeResponse(
+        bloc.jikan.getAnimeEpisodes, anime.malId);
+    return CompletionData(episodes.length, anime.episodes ?? 0, anime.airing);
   }
 
   Stream<Anime> _animeStream(Iterable<int> animeIds) async* {
@@ -95,34 +102,42 @@ class _BookmarksPageState extends State<BookmarksPage> {
     AppBloc bloc = BlocProvider.of<AppBloc>(context);
     for (var id in animeIds.where(
         (element) => !loadedAnimes.any((anime) => anime.malId == element))) {
-      Anime actualAnime = await bloc.getCachedAnimeResponse(bloc.jikan.getAnimeInfo, id);
+      Anime actualAnime =
+          await bloc.getCachedAnimeResponse(bloc.jikan.getAnime, id);
       yield actualAnime;
     }
   }
 
   Widget _getCompletionIndicator(Anime anime) {
     ThemeData theme = Theme.of(context);
-    CompletionData data = animeCompletionData[anime.malId];
-    if (data == null) return CircularProgressIndicator();
+    CompletionData? data = animeCompletionData[anime.malId];
+    if (data == null) return const CircularProgressIndicator();
     String percentageTxt = "?";
     int percentage = 0;
-    if (!anime.airing) {
+    bool probablyNotYetAired = anime.status?.toLowerCase() == "not yet aired" ||
+        anime.episodes == null;
+    if (!anime.airing && !probablyNotYetAired) {
       percentage = 100;
       percentageTxt = "100%";
-    } else if (data.airedEpisodes != null && data.airedEpisodes > 0)
+    } else if (data.airedEpisodes > 0) {
       try {
         percentage = (data.getFraction() * 100).round();
         percentageTxt = "${percentage.toString()}%";
-      } catch (e) {}
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error occured while trying to get completion indicator:\n $e');
+        }
+      }
+    }
     return Stack(
       alignment: Alignment.center,
       children: [
         CircleAvatar(
+          backgroundColor: theme.canvasColor,
           child: Text(
             percentageTxt,
-            style: theme.textTheme.caption,
+            style: theme.textTheme.bodySmall,
           ),
-          backgroundColor: theme.canvasColor,
         ),
         CircularProgressIndicator(value: percentage / 100),
       ],
@@ -133,12 +148,12 @@ class _BookmarksPageState extends State<BookmarksPage> {
       int bookmarksLength) {
     if (bookmarksLength < 3) return "well maybe this season just ain't it...";
     if (bookmarksLength < 5) return "hmm yes, this is a gourmet selection";
-    if (bookmarksLength < 10) return "that\'s a lot of weeb";
+    if (bookmarksLength < 10) return "that's a lot of weeb";
     if (bookmarksLength < 20) return "i mean...it's your time...";
     return "you weeb";
   }
 
-  Widget _buildList(List<int> bookmarks, BuildContext context) {
+  Widget _buildList(Iterable<int> bookmarks, BuildContext context) {
     ThemeData theme = Theme.of(context);
     // ignore: close_sinks
     return ListView.separated(
@@ -147,44 +162,47 @@ class _BookmarksPageState extends State<BookmarksPage> {
       itemBuilder: (ctnxt, index) {
         if (index == bookmarks.length) {
           return SizedBox(
+            height: 70,
+            width: double.infinity,
             child: ListTile(
                 title: Text(
               _getThatStringWeTalkedAboutTheFamilarCaptionOnTheBottomOfTheList(
                   bookmarks.length),
-              style: theme.textTheme.caption,
+              style: theme.textTheme.bodySmall,
               textAlign: TextAlign.center,
             )),
-            height: 70,
-            width: double.infinity,
           );
         }
-        if (index >= loadedAnimes.length)
-          return SizedBox(
-            child: ListTile(trailing: CircularProgressIndicator()),
+        if (index >= loadedAnimes.length) {
+          return const SizedBox(
             height: 70,
             width: double.infinity,
+            child: ListTile(trailing: CircularProgressIndicator()),
           );
+        }
 
         Anime e = loadedAnimes[index];
         return Dismissible(
             onDismissed: (direction) {
-              print("Dismissing ${e.malId}");
+              if (kDebugMode) {
+                print("Dismissing ${e.malId}");
+              }
               bloc.add(AppDimissAnime(animeId: e.malId));
               loadedAnimes.removeAt(index);
-              Scaffold.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("${e.title} dismissed"),
                   action: SnackBarAction(
                       label: "Undo",
                       onPressed: () =>
                           bloc.add(AppBookmarkAnime(animeId: e.malId)))));
             },
-            key: Key(e.malId.toString() + "-dismissible"),
+            key: Key("${e.malId}-dismissible"),
             child: Stack(
               key: Key(e.malId.toString()),
               children: [
                 ShaderMask(
                   shaderCallback: (rect) {
-                    return LinearGradient(
+                    return const LinearGradient(
                       begin: Alignment.centerRight,
                       end: Alignment.centerLeft,
                       colors: [Colors.black, Colors.transparent],
@@ -196,11 +214,11 @@ class _BookmarksPageState extends State<BookmarksPage> {
                     width: double.infinity,
                     height: 70,
                     child: Hero(
+                      tag: e.malId,
                       child: Image.network(
                         e.imageUrl,
                         fit: BoxFit.fitWidth,
                       ),
-                      tag: e.malId,
                     ),
                   ),
                 ),
@@ -211,16 +229,16 @@ class _BookmarksPageState extends State<BookmarksPage> {
                             .firstWhere((element) => element.malId == e.malId),
                         context),
                     title: Text(e.title),
-                    subtitle: e.genres.length > 0
+                    subtitle: e.genres.isNotEmpty
                         ? Text(
-                            "${e.genres[0].name}${e.genres.length > 1 ? ", " + e.genres[1].name : ""}")
+                            "${e.genres[0].name}${e.genres.length > 1 ? ", ${e.genres[1].name}" : ""}")
                         : null,
                     trailing: _getCompletionIndicator(e))
               ],
             ));
       },
       separatorBuilder: (BuildContext context, int index) {
-        return Divider(
+        return const Divider(
           height: 1,
           indent: 0,
         );
@@ -229,29 +247,31 @@ class _BookmarksPageState extends State<BookmarksPage> {
   }
 
   @override
-  Widget build(BuildContext buildContext) {
+  Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(buildWhen: (previous, current) {
       if (previous is AppReady && current is AppSyncing) {
         return false;
       }
       if (current is AppReady) {
-        print("bookmarks ${current.bookmarks.join(";")}");
+        if (kDebugMode) {
+          print("bookmarks ${current.bookmarks.join(";")}");
+        }
       }
       return true;
     }, builder: (context, state) {
       if (state is AppInitialState) {
-        return AlertDialog(
+        return const AlertDialog(
             title: Text(
                 "Something went wrong that prevented app to initialize :("));
       }
       if (state is AppFetching) {
-        return Center(
+        return const Center(
           child: CircularProgressIndicator(),
         );
       }
       if (state is AppReady) {
         if (state.bookmarks.isEmpty) {
-          return Center(
+          return const Center(
             child: Icon(
               Icons.turned_in_not_outlined,
               size: 70,
@@ -260,27 +280,30 @@ class _BookmarksPageState extends State<BookmarksPage> {
         }
         if (_animeStreamSubscription == null &&
             state.bookmarks.length > loadedAnimes.length) {
-          print(
-              "state.bookmarks.length > loadedAnimes.length so we're restarting anime stream"); // k
+          if (kDebugMode) {
+            print(
+                "state.bookmarks.length > loadedAnimes.length so we're restarting anime stream");
+          } // k
           _refreshListener(state.bookmarks);
         }
-        return _buildList(state.bookmarks, buildContext);
+        return _buildList(state.bookmarks, context);
       }
       if (state is AppFetchFailed) {
         return AlertDialog(
             title: Text(
                 "It seems like the app failed to download necessary data over the internet, make sure you're connected to the internet",
-                style: Theme.of(context).textTheme.bodyText1));
+                style: Theme.of(context).textTheme.bodyLarge));
       }
       if (state is AppFailedToLoadData) {
         return AlertDialog(
             title: Text(
                 "It seems like the app failed to load saved data :/\nTry restarting the application",
-                style: Theme.of(context).textTheme.bodyText1));
-      } else
+                style: Theme.of(context).textTheme.bodyLarge));
+      } else {
         return AlertDialog(
             title: Text("Uh oh, something went wrong...",
-                style: Theme.of(context).textTheme.bodyText1));
+                style: Theme.of(context).textTheme.bodyLarge));
+      }
     });
   }
 }

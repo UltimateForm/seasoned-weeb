@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-typedef void SettingTileOnChange(int value);
+typedef SettingTileOnChange = void Function(int value);
 
 class SettingTile extends StatefulWidget {
   final String title;
@@ -9,25 +9,25 @@ class SettingTile extends StatefulWidget {
   final Widget icon;
   final SettingTileOnChange onChange;
   final bool hideCurrentlySelected;
-  SettingTile(
-      {@required this.title,
-      @required this.choices,
+  const SettingTile(
+      {super.key,
+      required this.title,
+      required this.choices,
       this.initialValue = 0,
-      this.icon,
-      this.onChange,
-      this.hideCurrentlySelected = false})
-      : super();
+      required this.icon,
+      required this.onChange,
+      this.hideCurrentlySelected = false});
 
   @override
   State<SettingTile> createState() => _SettingTileState();
 }
 
 class _SettingTileState extends State<SettingTile> {
-  int _currentChoice;
+  late int _currentChoice;
   @override
   void initState() {
     super.initState();
-    _currentChoice = widget.initialValue ?? 0;
+    _currentChoice = widget.initialValue;
   }
 
   @override
@@ -51,7 +51,7 @@ class _SettingTileState extends State<SettingTile> {
       subtitle: widget.hideCurrentlySelected
           ? null
           : Text(widget.choices[_currentChoice]),
-      leading: widget.icon ?? Icon(Icons.settings),
+      leading: widget.icon,
       children: widget.choices
           .map((e) => ListTile(
                 title: Align(
@@ -61,7 +61,7 @@ class _SettingTileState extends State<SettingTile> {
                 onTap: () {
                   int value = widget.choices.indexOf(e);
                   setState(() {
-                    return _currentChoice = value;
+                    _currentChoice = value;
                   });
                   widget.onChange(value);
                 },

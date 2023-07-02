@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:jikan_api/jikan_api.dart';
 
 class GenresChips extends StatelessWidget {
-  final Iterable<GenericInfo> genres;
+  final Iterable<Meta> genres;
 
-  const GenresChips({Key key, @required this.genres}) : super(key: key);
+  const GenresChips({super.key, required this.genres});
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +20,12 @@ class GenresChips extends StatelessWidget {
               (genre) => Chip(
                   label: Text(
                     genre.name,
-                    style: theme.textTheme.bodyText1,
+                    style: theme.textTheme.bodyLarge,
                   ),
-                  avatar: genre.imageUrl != null
-                      ? Image.network(genre.imageUrl)
-                      : null,
+                  // @TODO: do generes have images??? this was here in older version
+                  // avatar: genre.imageUrl != null
+                  //     ? Image.network(genre.imageUrl)
+                  //     : null,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
             )
             .toList());

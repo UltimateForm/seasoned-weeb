@@ -1,9 +1,12 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../utils/constants.dart';
 
 part 'config_event.dart';
@@ -15,43 +18,47 @@ enum ConfigDataSection { all, preferences, dimissedSeries, bookmarkedSeries }
 
 class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
   Map<ConfigKeys, int> config;
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
 
-  ConfigBloc(ConfigInitialState initialState) : super(initialState) {
-    config = initialState.config;
+  ConfigBloc(ConfigInitialState initialState)
+      : config = Map.of(initialState.config),
+        super(initialState) {
+    on<ConfigEvent>(mapEventToState, transformer: sequential());
   }
 
-  @override
-  Stream<ConfigState> mapEventToState(ConfigEvent event) async* {
+  FutureOr<void> mapEventToState(
+      ConfigEvent event, Emitter<ConfigState> emit) async {
     if (event is SetConfig) {
-      yield ConfigSyncing(config);
+      emit(ConfigSyncing(config));
       try {
         await prefs.setInt(
             EnumToString.convertToString(event.key), event.value);
         config[event.key] = event.value;
-        yield ConfigReady(config);
+        emit(ConfigReady(config));
       } catch (e) {
-        yield ConfigError(e.toString());
+        emit(ConfigError(e.toString()));
       }
     }
     if (event is LoadConfig) {
-      yield ConfigLoading();
+      emit(ConfigLoading());
       try {
         prefs = await SharedPreferences.getInstance();
         for (var key in ConfigKeys.values) {
           try {
-            config[key] = prefs.getInt(EnumToString.convertToString(key));
+            config[key] = prefs.getInt(EnumToString.convertToString(key)) ?? 0;
           } catch (e) {
-            print("Failed to apply config value for $key");
+            if (kDebugMode) {
+              print("Failed to apply config value for $key");
+            }
           }
         }
-        yield ConfigReady(config);
+        emit(ConfigReady(config));
       } catch (e) {
-        yield ConfigError(e.toString());
+        emit(ConfigError(e.toString()));
       }
     }
     if (event is ResetPreferences) {
-      yield ConfigDataClearing(config, sectionCleared: event.sectionToReset);
+      emit(ConfigDataClearing(config, sectionCleared: event.sectionToReset));
       switch (event.sectionToReset) {
         case ConfigDataSection.bookmarkedSeries:
           await prefs.remove(bookmarkedPrefKey);
@@ -60,13 +67,14 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
           await prefs.remove(dismissedPrefKey);
           break;
         case ConfigDataSection.preferences:
-          for (var key in ConfigKeys.values)
+          for (var key in ConfigKeys.values) {
             await prefs.remove(EnumToString.convertToString(key));
+          }
           break;
         default:
           await prefs.clear();
       }
-      yield ConfigDataCleared(config, sectionCleared:event.sectionToReset);
+      emit(ConfigDataCleared(config, sectionCleared: event.sectionToReset));
     }
   }
 }

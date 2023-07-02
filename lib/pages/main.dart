@@ -1,16 +1,19 @@
 import "package:flutter/material.dart";
-import 'package:seasonal_weeb/pages/bookmarks.dart';
-import 'package:seasonal_weeb/pages/season.dart';
-import 'package:seasonal_weeb/pages/settings.dart';
+
+import "bookmarks.dart";
+import "season.dart";
+import "settings.dart";
 
 class MainView extends StatefulWidget {
+  const MainView({super.key});
+
   @override
-  _MainViewState createState() => _MainViewState();
+  MainViewState createState() => MainViewState();
 }
 
-class _MainViewState extends State<MainView> {
+class MainViewState extends State<MainView> {
   int _selectedIndex = 1;
-  PageController _pageController;
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -28,17 +31,17 @@ class _MainViewState extends State<MainView> {
     setState(() {
       _selectedIndex = index;
       _pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.easeOut);
+          duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
     });
   }
 
   @override
-  Widget build(BuildContext buildContext) {
+  Widget build(BuildContext context) {
     return Scaffold(
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onNavItemTap,
-          items: [
+          items: const [
             BottomNavigationBarItem(
                 icon: Icon(Icons.settings_outlined), label: "Settings"),
             BottomNavigationBarItem(
@@ -50,16 +53,22 @@ class _MainViewState extends State<MainView> {
         body: SizedBox.expand(
             child: WillPopScope(
           onWillPop: () async {
-            if (_selectedIndex != 1)
+            if (_selectedIndex != 1) {
               await _pageController.animateToPage(1,
-                  duration: Duration(milliseconds: 500), curve: Curves.easeOut);
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOut);
+            }
             return false;
           },
           child: PageView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             controller: _pageController,
             onPageChanged: (index) => setState(() => _selectedIndex = index),
-            children: [SettingsPage(), SeasonPage(), BookmarksPage()],
+            children: [
+              const SettingsPage(),
+              SeasonPage(),
+              const BookmarksPage()
+            ],
           ),
         )));
   }

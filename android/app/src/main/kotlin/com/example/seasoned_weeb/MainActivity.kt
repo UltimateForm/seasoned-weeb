@@ -1,4 +1,4 @@
-package com.example.seasonal_weeb
+package com.example.seasoned_weeb
 
 import io.flutter.embedding.android.FlutterActivity
 

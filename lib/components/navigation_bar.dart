@@ -1,11 +1,12 @@
 import "package:flutter/material.dart";
 
 class NavigationBar extends StatelessWidget {
-  NavigationBar() : super();
+  const NavigationBar({super.key});
 
-  Widget build(BuildContext buildContext) {
+  @override
+  Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items: [
+      items: const [
         BottomNavigationBarItem(
             icon: Icon(Icons.settings_outlined), label: "Settings"),
         BottomNavigationBarItem(

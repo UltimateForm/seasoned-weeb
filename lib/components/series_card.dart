@@ -1,18 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jikan_api/jikan_api.dart';
-import 'package:seasonal_weeb/bloc/app/app_bloc.dart';
-import 'package:seasonal_weeb/bloc/config/config_bloc.dart';
-import 'package:seasonal_weeb/components/genres_chips.dart';
 import 'package:tcard/tcard.dart';
 
-class SeriesCard extends StatefulWidget {
-  const SeriesCard({Key key, this.anime, this.parentController, this.index})
-      : super(key: key);
+import '../bloc/app/app_bloc.dart';
+import '../bloc/config/config_bloc.dart';
+import 'genres_chips.dart';
 
-  final AnimeItem anime;
+class SeriesCard extends StatefulWidget {
+  final Anime anime;
   final int index;
   final TCardController parentController;
+
+  const SeriesCard(
+      {super.key,
+      required this.anime,
+      required this.parentController,
+      required this.index});
 
   @override
   State<StatefulWidget> createState() => _SeriesCardState();
@@ -20,34 +25,45 @@ class SeriesCard extends StatefulWidget {
 
 class _SeriesCardState extends State<SeriesCard> {
   int activePicture = 0;
-  List<ImageProvider> images;
+  List<ImageProvider> images = [];
   bool showInfo = false;
-  ThemeData theme;
+  late ThemeData theme;
   //ignore: close_sinks
-  ConfigBloc config;
+  late ConfigBloc config;
   @override
   void initState() {
     super.initState();
     if (widget.index == widget.parentController.index) {
-        //ignore: close_sinks
+      //ignore: close_sinks
       var bloc = BlocProvider.of<AppBloc>(context);
-      bloc.getCachedAnimeResponse(bloc.jikan.getAnimePictures, widget.anime.malId)
+      bloc
+          .getCachedAnimeResponse(
+              bloc.jikan.getAnimePictures, widget.anime.malId)
           .then((value) async {
-        final networkImages =
-            value.reversed.map((p) => p.large).toSet().map((url) {
-          final img = NetworkImage(url);
-          return img;
-        }).toList();
+        final networkImages = value.reversed
+            .map((p) => p.largeImageUrl)
+            .toSet()
+            .whereType<String>()
+            .map((url) => NetworkImage(url))
+            .toList();
         for (var i = 0; i < networkImages.length; i++) {
-          if (i == 0)
+          if (i == 0) {
             await precacheImage(networkImages[i], context);
-          else
+          } else {
             precacheImage(networkImages[i], context);
+          }
         }
         setState(() {
           images = networkImages;
         });
-      }).catchError((error) => print(error));
+      }).catchError((error) {
+        if (kDebugMode) {
+          print(error);
+        }
+        setState(() {
+          images = [];
+        });
+      });
     }
     config = BlocProvider.of<ConfigBloc>(context);
   }
@@ -58,15 +74,15 @@ class _SeriesCardState extends State<SeriesCard> {
       for (var i = 0; i < length; i++)
         Expanded(
           child: Padding(
-              padding: EdgeInsets.all(5),
+              padding: const EdgeInsets.all(5),
               child: SizedBox.fromSize(
-                  size: Size(double.infinity, 10),
+                  size: const Size(double.infinity, 10),
                   child: AnimatedContainer(
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     decoration: BoxDecoration(
                         color: activePicture == i
                             ? theme.primaryColor.withAlpha(100)
-                            : theme.backgroundColor.withAlpha(100),
+                            : theme.colorScheme.background.withAlpha(100),
                         borderRadius: BorderRadius.circular(16)),
                   ))),
         )
@@ -88,7 +104,7 @@ class _SeriesCardState extends State<SeriesCard> {
 
   @override
   Widget build(BuildContext buildContext) {
-    theme = Theme.of(this.context);
+    theme = Theme.of(context);
     return GestureDetector(
         onLongPressStart: (s) => _toggleInfo(),
         onLongPressEnd: (s) => _toggleInfo(),
@@ -99,13 +115,13 @@ class _SeriesCardState extends State<SeriesCard> {
             child: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: images != null && images.length > 0
+                        image: images.isNotEmpty
                             ? images[activePicture]
                             : NetworkImage(widget.anime.imageUrl),
                         fit: BoxFit.cover),
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16.0),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                           blurRadius: 23,
                           offset: Offset(0, 11),
@@ -120,27 +136,25 @@ class _SeriesCardState extends State<SeriesCard> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: _createGalleryIndicators(
-                              images == null || images.length == 1
-                                  ? 0
-                                  : images.length)),
+                              images.length == 1 ? 0 : images.length)),
                       AnimatedOpacity(
-                        duration: Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 500),
                         opacity: showInfo ? 1 : 0,
                         child: Container(
-                            color: theme.backgroundColor.withAlpha(130),
-                            padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+                            color: theme.colorScheme.background.withAlpha(130),
+                            padding: const EdgeInsets.fromLTRB(10, 30, 10, 30),
                             width: double.infinity,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   widget.anime.title,
-                                  style: theme.textTheme.headline4,
+                                  style: theme.textTheme.headlineMedium,
                                   textAlign: TextAlign.center,
                                   maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                Divider(),
+                                const Divider(),
                                 if (config.config[ConfigKeys.showScores] ==
                                         null ||
                                     config.config[ConfigKeys.showScores] == 0)
@@ -151,20 +165,25 @@ class _SeriesCardState extends State<SeriesCard> {
                                       Icon(
                                         Icons.star,
                                         size: 100,
-                                        color: theme.accentColor,
+                                        color: theme.colorScheme.secondary,
                                       ),
                                       Text(
                                         widget.anime.score == null
                                             ? "?"
                                             : widget.anime.score.toString(),
-                                        style: theme.textTheme.bodyText2,
+                                        style: theme.textTheme.bodyMedium,
                                       )
                                     ],
                                   ),
-                                Divider(),
-                                GenresChips(genres: widget.anime.genres)
+                                const Divider(),
+                                GenresChips(genres: widget.anime.genres),
                               ],
                             )),
+                      ),
+                      Container(
+                        color: Colors.red,
+                        child:
+                            Text(widget.anime.episodes?.toString() ?? "NO EPS"),
                       )
                     ],
                   ),

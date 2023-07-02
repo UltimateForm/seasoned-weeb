@@ -8,14 +8,13 @@ abstract class ConfigEvent extends Equatable {
   List<Object> get props => [];
 }
 
-
 class LoadConfig extends ConfigEvent {}
 
 class SetConfig extends ConfigEvent {
   final ConfigKeys key;
   final int value;
 
-  SetConfig(this.key, this.value);
+  const SetConfig(this.key, this.value);
 
   @override
   List<Object> get props => [key, value];
@@ -24,7 +23,7 @@ class SetConfig extends ConfigEvent {
 class ResetPreferences extends ConfigEvent {
   final ConfigDataSection sectionToReset;
 
-  ResetPreferences({@required this.sectionToReset});
+  const ResetPreferences({required this.sectionToReset});
 
   @override
   List<Object> get props => [sectionToReset];

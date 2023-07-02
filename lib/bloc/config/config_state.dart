@@ -13,20 +13,20 @@ class ConfigLoading extends ConfigState {}
 class ConfigReady extends ConfigState {
   final Map<ConfigKeys, int> config;
 
-  ConfigReady(this.config);
+  const ConfigReady(this.config);
   @override
   List<Object> get props => [config];
 }
 
 class ConfigSyncing extends ConfigReady {
-  ConfigSyncing(Map<ConfigKeys, int> config) : super(config);
+  const ConfigSyncing(Map<ConfigKeys, int> config) : super(config);
 
   @override
   List<Object> get props => [];
 }
 
 class ConfigInitialState extends ConfigReady {
-  ConfigInitialState(Map<ConfigKeys, int> config) : super(config);
+  const ConfigInitialState(Map<ConfigKeys, int> config) : super(config);
   @override
   List<Object> get props => [];
 }
@@ -34,7 +34,7 @@ class ConfigInitialState extends ConfigReady {
 class ConfigError extends ConfigState {
   final String error;
 
-  ConfigError(this.error);
+  const ConfigError(this.error);
 
   @override
   List<Object> get props => [error];
@@ -42,8 +42,8 @@ class ConfigError extends ConfigState {
 
 class ConfigDataClearing extends ConfigSyncing {
   final ConfigDataSection sectionCleared;
-  ConfigDataClearing(Map<ConfigKeys, int> config,
-      {@required this.sectionCleared})
+  const ConfigDataClearing(Map<ConfigKeys, int> config,
+      {required this.sectionCleared})
       : super(config);
 
   @override
@@ -52,8 +52,8 @@ class ConfigDataClearing extends ConfigSyncing {
 
 class ConfigDataCleared extends ConfigReady {
   final ConfigDataSection sectionCleared;
-  ConfigDataCleared(Map<ConfigKeys, int> config,
-      {@required this.sectionCleared})
+  const ConfigDataCleared(Map<ConfigKeys, int> config,
+      {required this.sectionCleared})
       : super(config);
 
   @override
